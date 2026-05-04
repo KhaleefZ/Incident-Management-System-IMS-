@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IncidentStatus {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+  CLOSED
+}
+
+model WorkItem {
+  id            String         @id @default(uuid())
+  componentId   String
+  severity      String         
+  status        IncidentStatus @default(OPEN)
+  startTime     DateTime       @default(now())
+  endTime       DateTime?
+  mttr          Float?
+  rca           RCA?
+
+  @@index([componentId])
+}
+
+model RCA {
+  id                String   @id @default(uuid())
+  workItemId        String   @unique
+  workItem          WorkItem @relation(fields: [workItemId], references: [id])
+  rootCauseCategory String
+  fixApplied        String
+  preventionSteps   String
+  submittedAt       DateTime @default(now())
+}

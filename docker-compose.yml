@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  # Transactional Store (Workflow & RCA)
+  postgres:
+    image: postgres:15-alpine
+    container_name: ims_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: ims_db
+    volumes:
+      - ./infra/docker/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  # High-Volume Audit Log (Raw Signals)
+  mongodb:
+    image: mongo:latest
+    container_name: ims_mongodb
+    volumes:
+      - ./infra/docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - "27017:27017"
+
+  # Debouncing, Rate Limiting & Queues
+  redis:
+    image: redis:7-alpine
+    container_name: ims_redis
+    ports:
+      - "6379:6379"
