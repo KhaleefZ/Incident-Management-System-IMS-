@@ -42,20 +42,20 @@ A high-throughput incident management system built with NestJS and Next.js, feat
 The system is designed for **99.99% availability** under extreme load, using professional-grade data engineering patterns.
 
 ```mermaid
-architecture-beta
-    group cluster(cloud)[IMS Cluster]
-    
-    service api(internet)[Ingestion API] in cluster
-    service queue(disk)[BullMQ / Redis] in cluster
-    service worker(server)[Signal Processor] in cluster
-    service pg(database)[PostgreSQL (Truth)] in cluster
-    service mongo(database)[MongoDB (Audit)] in cluster
-    
-    api:R --> L:queue
-    queue:B --> T:worker
-    worker:L --> R:mongo
-    api:B --> T:pg
-    worker:B -- T:pg
+flowchart TD
+    subgraph cluster [IMS Cluster]
+        api[Ingestion API]
+        queue[(BullMQ / Redis)]
+        worker[Signal Processor]
+        pg[(PostgreSQL)]
+        mongo[(MongoDB)]
+    end
+
+    api -->|Push| queue
+    queue -->|Process| worker
+    worker -->|Log| mongo
+    api -->|Create| pg
+    worker -->|Update| pg
 ```
 
 ### High-Throughput Design Patterns
