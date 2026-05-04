@@ -70,6 +70,27 @@ flowchart TD
 *   **Work Item State Pattern:** Business logic strictly enforces state transitions (OPEN → INVESTIGATING → RESOLVED → CLOSED).
 *   **Strategy Pattern (Alerting):** Swappable logic for P0/P1 vs P2 alerts (Critical vs Standard).
 
+## 🏆 Bonus: Non-Functional Excellence
+
+Beyond the core requirements, this system implements several production-grade optimizations:
+
+### 🛡️ Security & Stability Layer
+*   **API Rate Limiting:** Implemented `@nestjs/throttler` to prevent DDoS attacks on the ingestion endpoint.
+*   **Payload Validation:** Strict DTO validation to ensure malformed signals never reach the processing queue.
+*   **CORS Protection:** Configured to restrict access only to the trusted frontend.
+
+### ⚡ Performance & Scalability
+*   **O(1) Debouncing:** Used Redis `SETEX` for constant-time check-and-set debouncing, ensuring high-frequency bursts (10k/sec) never overwhelm the RDBMS.
+*   **Zero-Block Ingestion:** The producer (API) never waits for NoSQL or RDBMS writes; it hands off to the worker via a distributed queue (BullMQ).
+*   **Capped Audit Logs:** MongoDB is configured as a Capped Collection, guaranteeing stable disk usage and high-speed sequential writes.
+
+### 🔍 Enhanced Observability
+*   **Live Throughput Monitoring:** Internal metrics engine prints real-time "Signals Per Second" to the console.
+*   **Health Surveillance:** Dedicated `/health` probe for automated uptime monitoring and orchestrator integration.
+
+---
+**GitHub Repository:** [https://github.com/KhaleefZ/Incident-Management-System-IMS-](https://github.com/KhaleefZ/Incident-Management-System-IMS-)
+
 ## 🧪 Testing
 
 ### Automated Tests
